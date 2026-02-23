@@ -12,10 +12,14 @@ module.exports = {
   devtool: "source-map",
 
   //точка входа в приложение, с которого начнётся процесс сборки
-  entry: "./src/script.ts",
+  entry: {
+    project1: "./src/project1/script.ts",
+    project2: "./src/project2/script.ts",
+  },
   // выходной файл и путь для сохранения
+  // [name] будет подставлять имя entry (project1 или project2)
   output: {
-    filename: "bundle.js",
+    filename: "[name].bundle.js",
     path: path.resolve(__dirname, "dist"),
     clean: true,
   },
@@ -23,12 +27,21 @@ module.exports = {
   //доп. плагины, которые можно применять к процессу сборки
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./src/index.html", // Путь к вашему исходному HTML
+      template: "./src/project1/index.html",
+      filename: "project1.html",
+      chunks: ["project1"], // Только файлы для project1
+    }),
+
+    // HTML для второго проекта
+    new HtmlWebpackPlugin({
+      template: "./src/project2/index.html",
+      filename: "project2.html",
+      chunks: ["project2"], // Только файлы для project2
     }),
     new MiniCssExtractPlugin({
       // Имя выходного файла. [contenthash] нужен, чтобы при изменении стилей
       // менялось имя файла (для сброса кэша браузера)
-      filename: "style.[contenthash].css",
+      filename: "[name].[contenthash].css",
     }),
     new CopyPlugin({
       patterns: [
@@ -77,5 +90,6 @@ module.exports = {
     devMiddleware: {
       writeToDisk: true,
     },
+    open: "/project1.html",
   },
 };

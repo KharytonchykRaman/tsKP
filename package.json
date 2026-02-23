@@ -2,9 +2,9 @@
   "name": "example",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/script.js",
+  "main": "./src/project1/script.js",
   "scripts": {
-    "start": "webpack serve --open",
+    "start": "webpack serve ",
     "build": "webpack"
   },
   "keywords": [],
