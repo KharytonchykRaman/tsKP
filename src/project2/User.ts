@@ -6,66 +6,79 @@ type buyCategory =
   | "entertainment"
   | "transport"
   | "present"
-  | "education";
+  | "education"
+  | "other";
 
 interface Operation {
   amount: number;
   method: PaymentMethod;
   type: OperationType;
   timing: Timing;
-  category?: buyCategory;
+  category: buyCategory;
 }
 
 class Cash {
-  private _name: string;
-  private _balance: number;
+  public name: string;
+  public balance: number;
 
-  constructor(name: string) {
-    this._name = name;
-    this._balance = 0;
+  constructor(name: string, initialBalance: number = 0) {
+    this.name = name;
+    this.balance = initialBalance;
   }
 
-  get balance(): number {
-    return this._balance;
+  public addBalance(amount: number) {
+    this.balance += amount;
   }
 
-  get name() {
-    return this._name;
+  public removeBalance(amount: number) {
+    if (this.balance >= amount) {
+      this.balance -= amount;
+    } else {
+      throw new Error("Недостаточно средств в наличных");
+    }
   }
 }
 
 class Card {
-  private _name: string;
-  private _balance: number;
+  public name: string;
+  public balance: number;
 
-  constructor(name: string) {
-    this._name = name;
-    this._balance = 0;
+  constructor(name: string, initialBalance: number = 0) {
+    this.name = name;
+    this.balance = initialBalance;
   }
 
-  get balance(): number {
-    return this._balance;
+  public addBalance(amount: number) {
+    this.balance += amount;
   }
 
-  get name() {
-    return this._name;
+  public removeBalance(amount: number) {
+    if (this.balance >= amount) {
+      this.balance -= amount;
+    } else {
+      throw new Error("Недостаточно средств на карте");
+    }
   }
 }
 
 export class User {
-  private _username: string;
-  private _cash: Cash;
-  private _card: Card;
-  private operations: Operation[] = [];
+  public username: string;
+  public cash: Cash;
+  public card: Card;
+  public operations: Operation[];
 
-  constructor(username: string) {
-    this._username = username;
-    this._cash = new Cash(`Кошелек ${this.username}`);
-    this._card = new Card(`Карта ${this.username}`);
-  }
+  constructor(
+    username: string,
+    cash?: Cash,
+    card?: Card,
+    operations?: Operation[]
+  ) {
+    this.username = username;
 
-  get username() {
-    return this._username;
+    this.cash = cash || new Cash(`Кошелек ${this.username}`);
+    this.card = card || new Card(`Карта ${this.username}`);
+
+    this.operations = operations ? [...operations] : [];
   }
 
   get currentExpenses(): number {
@@ -93,26 +106,37 @@ export class User {
   }
 
   get balance(): number {
-    return this.card.balance + this._cash.balance;
+    return this.card.balance + this.cash.balance;
   }
 
-  get card() {
-    return this._card;
-  }
-  get cash() {
-    return this._cash;
+  get categories() {
+    const fullAmount = this.operations.reduce((sum, obj) => sum + obj.amount, 0);
+
+    if (fullAmount === 0) return [];
+
+    const categories = this.operations.map((obj) => ({
+      name: obj.category,
+      percentage: (100 * obj.amount) / fullAmount,
+    }));
+
+    return categories.sort((a, b) => b.percentage - a.percentage);
   }
 
-  get categoryObj() {
-    const fullAmount = this.operations
-      .filter((op) => op.category)
-      .reduce((sum, obj) => sum + obj.amount, 0);
+  get bestCategory() {
+    return this.categories[0] || null;
+  }
 
-    return this.operations.map((obj) => {
-      return {
-        category: obj.category,
-        percentage: (100 * obj.amount) / fullAmount,
-      };
-    });
+  public addOperation(operation: Operation) {
+    this.operations.push(operation);
+
+    if (operation.timing === "current") {
+      const targetWallet = operation.method === "Cash" ? this.cash : this.card;
+
+      if (operation.type === "income") {
+        targetWallet.addBalance(operation.amount);
+      } else {
+        targetWallet.removeBalance(operation.amount);
+      }
+    }
   }
 }

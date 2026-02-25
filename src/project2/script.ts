@@ -92,11 +92,11 @@ const topCategoryText: HTMLElement | null =
   document.getElementById("topCategoryText");
 
 //--------------------------------------------------------------------------------
-
+debugger
 const users: User[] =
   localStorage.getItem("users") === null
     ? []
-    : JSON.parse(localStorage.getItem("users") as string);
+    : (JSON.parse(localStorage.getItem("users") as string) as Object[]).map(obj => new User(Object.values(obj)));
 
 const existingUsers: string[] = users.map((u) => u.username);
 
@@ -140,15 +140,23 @@ if (tabs instanceof HTMLElement) {
 }
 
 function loadUser(): void {
-  const currUsername: string = localStorage.getItem("currentUser") as string;
+  debugger
+  const currUsername: string | null= localStorage.getItem("currentUser");
+  console.log(users[0]);
+
   const currUser: User = users.find((u) => u.username === currUsername) as User;
 
   (usernameSpan as HTMLElement).textContent = `: ${currUsername}`;
-  (totalBalanceAmount as HTMLElement).textContent = `${currUser.balance} ₽`;
+  (totalBalanceAmount as HTMLElement).textContent = `${currUser.balance} ₽`;  
   (cardNameInput as HTMLInputElement).value = currUser.card.name;
   (cardAmountInput as HTMLInputElement).value =
     currUser.card.balance.toString();
   (cashNameInput as HTMLInputElement).value = currUser.cash.name;
   (cashAmountInput as HTMLInputElement).value =
     currUser.cash.balance.toString();
+  (topCategoryText as HTMLElement).textContent = currUser.bestCategory?.name || "Нет данных";
+}
+
+if (localStorage.getItem("currentUser")) {
+  loadUser();
 }
