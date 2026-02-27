@@ -204,7 +204,8 @@ $("tabs").addEventListener("click", (e) => {
 });
 
 $("addExpenseBtn").addEventListener("click", () =>
-  addOp("expense", "current", "expense"),
+  {debugger;
+  addOp("expense", "current", "expense")},
 );
 $("addIncomeBtn").addEventListener("click", () =>
   addOp("income", "current", "income"),
