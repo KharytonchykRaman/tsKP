@@ -15,7 +15,7 @@
     <div class="container">
       <!-- Секция пользователя -->
       <div class="user-section" id="userSection">
-        <h2 class="section-title">👤 Выбор пользователя <span id="username"></span></h2>
+        <h2 class="section-title">👤 Выбор пользователя</h2>
         <div class="form-row">
           <div class="form-group">
             <label for="usernameInput">Имя пользователя</label>
@@ -40,12 +40,6 @@
           "
         >
           Текущий пользователь: <strong id="currentUsername"></strong>
-          <button
-            id="logoutBtn"
-            style="margin-left: 10px; padding: 5px 10px; font-size: 12px"
-          >
-            Выйти
-          </button>
         </div>
       </div>
 
@@ -118,14 +112,6 @@
         <div class="tab-content active" id="currentExpenses">
           <div class="form-row" style="margin-bottom: 20px">
             <div class="form-group">
-              <label for="expenseNameInput">Название</label>
-              <input
-                type="text"
-                id="expenseNameInput"
-                placeholder="Что купили?"
-              />
-            </div>
-            <div class="form-group">
               <label for="expenseAmountInput">Сумма</label>
               <input
                 type="number"
@@ -170,14 +156,6 @@
         <div class="tab-content" id="currentIncomes">
           <div class="form-row" style="margin-bottom: 20px">
             <div class="form-group">
-              <label for="incomeNameInput">Название</label>
-              <input
-                type="text"
-                id="incomeNameInput"
-                placeholder="Откуда пришли деньги?"
-              />
-            </div>
-            <div class="form-group">
               <label for="incomeAmountInput">Сумма</label>
               <input
                 type="number"
@@ -209,14 +187,6 @@
         <!-- Планируемые расходы -->
         <div class="tab-content" id="plannedExpenses">
           <div class="form-row" style="margin-bottom: 20px">
-            <div class="form-group">
-              <label for="plannedExpenseNameInput">Название</label>
-              <input
-                type="text"
-                id="plannedExpenseNameInput"
-                placeholder="На что планируете потратить?"
-              />
-            </div>
             <div class="form-group">
               <label for="plannedExpenseAmountInput">Сумма</label>
               <input
@@ -253,14 +223,6 @@
         <!-- Планируемые доходы -->
         <div class="tab-content" id="plannedIncomes">
           <div class="form-row" style="margin-bottom: 20px">
-            <div class="form-group">
-              <label for="plannedIncomeNameInput">Название</label>
-              <input
-                type="text"
-                id="plannedIncomeNameInput"
-                placeholder="Что ожидаете получить?"
-              />
-            </div>
             <div class="form-group">
               <label for="plannedIncomeAmountInput">Сумма</label>
               <input
@@ -313,5 +275,33 @@
         </div>
       </div>
     </div>
+
+    <!-- Шаблон транзакции -->
+    <template id="transaction-template">
+      <div class="transaction-item">
+        <div class="transaction-info">
+          <div class="transaction-property">
+            <span class="transaction-category"></span>
+            <span class="transaction-method"></span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px">
+          <span class="transaction-amount"></span>
+          <button class="delete" title="Удалить">🗑️</button>
+        </div>
+      </div>
+    </template>
+
+    <!-- Шаблон статистики -->
+    <template id="stat-template">
+      <div class="stat-card">
+        <div class="stat-value"></div>
+        <div class="stat-label"></div>
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+        <small class="stat-percent"></small>
+      </div>
+    </template>
   </body>
 </html>

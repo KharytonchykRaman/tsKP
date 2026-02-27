@@ -87,7 +87,7 @@ const orders: Order[] = [
   { user: "vanya", components: ["first comp", "seconsd comp"] },
   { user: "petya", components: [] },
   { user: "sasha", components: ["third comp"] },
-  { user: "vanya", components: ["fourth comp", "fifth comp", "sixth comp"] },
+  { user: "igor'", components: ["fourth comp", "fifth comp", "sixth comp"] },
   { user: "vlad", components: ["seventh comp"] },
 ];
 
@@ -264,9 +264,11 @@ function addBook(library: Library, book: Book): void {
   library.books.push(book);
 }
 
-function removeBookByTitle(library: Library, bookTitle: string): void {
+function removeBookByTitle(library: Library): void {
   library.books.splice(
-    library.books.findIndex((b) => b.title === bookTitle),
+    library.books.findIndex(
+      (b) => b.title === (deleteTitle as HTMLInputElement).value,
+    ),
     1,
   );
 }
@@ -274,9 +276,11 @@ function removeBookByTitle(library: Library, bookTitle: string): void {
 const libraryTA: HTMLElement | null = document.getElementById("library");
 const newTitle: HTMLElement | null = document.getElementById("newTitle");
 const newAuthor: HTMLElement | null = document.getElementById("newAuthor");
-const createBookBtn: HTMLElement | null = document.getElementById("newAuthor");
-const deleteTitle: HTMLElement | null = document.getElementById("newAuthor");
-const deleteBookBtn: HTMLElement | null = document.getElementById("newAuthor");
+const createBookBtn: HTMLElement | null =
+  document.getElementById("createBookBtn");
+const deleteTitle: HTMLElement | null = document.getElementById("deleteTitle");
+const deleteBookBtn: HTMLElement | null =
+  document.getElementById("deleteBookBtn");
 
 if (
   libraryTA instanceof HTMLTextAreaElement &&
@@ -284,7 +288,7 @@ if (
   newAuthor instanceof HTMLInputElement &&
   createBookBtn instanceof HTMLElement &&
   deleteTitle instanceof HTMLInputElement &&
-  deleteBookBtn instanceof HTMLInputElement
+  deleteBookBtn instanceof HTMLElement
 ) {
   libraryTA.value = JSON.stringify(library);
   createBookBtn.addEventListener("click", () => {
@@ -293,7 +297,8 @@ if (
   });
 
   deleteBookBtn.addEventListener("click", () => {
-    removeBookByTitle(library, deleteTitle.value);
+    removeBookByTitle(library);
+    libraryTA.value = JSON.stringify(library);
   });
 }
 

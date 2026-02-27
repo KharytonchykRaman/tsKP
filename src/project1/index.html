@@ -3,59 +3,140 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KP typescript</title>
+    <title>KP TypeScript</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+      }
+      .task {
+        background: white;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+      }
+      input,
+      button,
+      textarea {
+        margin: 6px 4px;
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 60px;
+        font-family: monospace;
+      }
+      button {
+        background: #4caf50;
+        color: white;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #45a049;
+      }
+    </style>
   </head>
   <body>
-    <input type="text" placeholder="string for shuffle" id="firstInput" />
-    <button id="shuffleButton">shuffle</button>
-    <textarea readonly id="firstRes" placeholder="shuffled string"></textarea>
+    <section class="task">
+      <h2>Shuffle String</h2>
+      <input type="text" placeholder="string for shuffle" id="firstInput" />
+      <button id="shuffleButton">Shuffle</button>
+      <textarea readonly id="firstRes" placeholder="shuffled string"></textarea>
+    </section>
 
-    <p>Usernames</p>
-    <textarea readonly id="usernames"></textarea>
+    <section class="task">
+      <h2>Users and Admins</h2>
+      <p><strong>Usernames:</strong></p>
+      <textarea readonly id="usernames"></textarea>
 
-    <p>Admins</p>
-    <textarea readonly id="admins" placeholder="admin users"></textarea>
+      <p><strong>Admins:</strong></p>
+      <textarea readonly id="admins" placeholder="admin users"></textarea>
 
-    <input type="text" placeholder="username here" id="secondInput" />
-    <button id="orderButton">find</button>
-    <textarea readonly id="orders" placeholder="user orders"></textarea>
+      <input type="text" placeholder="username here" id="secondInput" />
+      <button id="orderButton">Find Orders</button>
+      <textarea readonly id="orders" placeholder="user orders"></textarea>
+    </section>
 
-    <input type="text" placeholder="item id here" id="thirdInput" />
-    <button id="itemButton">find</button>
-    <textarea readonly id="thirdRes" placeholder="item by id"></textarea>
+    <section class="task">
+      <h2>Inventory</h2>
+      <input type="text" placeholder="item ID" id="thirdInput" />
+      <button id="itemButton">Find Item</button>
+      <textarea readonly id="thirdRes" placeholder="item by ID"></textarea>
+    </section>
 
-    <input type="text" placeholder="mage name" id="mageName" />
-    <input type="number" placeholder="mage damage" id="mageDmg" />
-    <button id="mageBtn">create mage</button>
+    <section class="task">
+      <h2>Character Attack</h2>
+      <div>
+        <input type="text" placeholder="mage name" id="mageName" />
+        <input type="number" placeholder="mage damage" id="mageDmg" />
+        <button id="mageBtn">Create Mage</button>
+      </div>
+      <div>
+        <input type="text" placeholder="warrior name" id="warriorName" />
+        <input type="number" placeholder="warrior damage" id="warriorDmg" />
+        <button id="warriorBtn">Create Warrior</button>
+      </div>
+      <textarea
+        readonly
+        id="attackRes"
+        placeholder="attack response"
+      ></textarea>
+    </section>
 
-    <input type="text" placeholder="warrior name" id="warriorName" />
-    <input type="number" placeholder="warrior damage" id="warriorDmg" />
-    <button id="warriorBtn">create warrior</button>
+    <section class="task">
+      <h2>Library</h2>
+      <p><strong>Current library:</strong></p>
+      <textarea readonly id="library"></textarea>
 
-    <textarea readonly id="attackRes" placeholder="attack response"></textarea>
+      <div>
+        <input type="text" id="newTitle" placeholder="new book title" />
+        <input type="text" id="newAuthor" placeholder="new book author" />
+        <button id="createBookBtn">Add Book</button>
+      </div>
 
-    <p>Library</p>
-    <textarea readonly id="library"></textarea>
+      <div>
+        <input
+          type="text"
+          id="deleteTitle"
+          placeholder="delete book by title"
+        />
+        <button id="deleteBookBtn">Delete Book</button>
+      </div>
+    </section>
 
-    <input type="text" id="newTitle" placeholder="new book title" />
-    <input type="text" id="newAuthor" placeholder="new book author" />
-    <button id="createBookBtn">create book</button>
+    <section class="task">
+      <h2>Car Position</h2>
+      <p><strong>Car instance:</strong></p>
+      <textarea readonly id="car"></textarea>
+    </section>
 
-    <input type="text" id="deleteTitle" placeholder="delete book by title" />
-    <button id="deleteBookBtn">delete book</button>
+    <section class="task">
+      <h2>Game Objects</h2>
+      <textarea id="playerTA" placeholder="player position" readonly></textarea>
+      <textarea id="npcTA" placeholder="NPC position" readonly></textarea>
+      <button id="playerBtn">Update Player</button>
+      <button id="npcBtn">Update NPC</button>
+    </section>
 
-    <p>car instance</p>
-    <textarea id="car"></textarea>
-
-    <textarea id="playerTA" placeholder="player position"></textarea>
-    <textarea id="npcTA" placeholder="npc position"></textarea>
-    <button id="playerBtn">update player</button>
-    <button id="npcBtn">update NPC</button>
-
-    <input type="text" id="newHeroName" placeholder="new hero name" />
-    <input type="number" id="newHeroHealth" placeholder="new hero health" />
-    <input type="number" id="newHeroAttack" placeholder="new hero attack" />
-    <button id="createHeroBtn">create new hero</button>
-    <textarea id="heroTA" placeholder="Hero.toString()"></textarea>
+    <section class="task">
+      <h2>Create Hero</h2>
+      <input type="text" id="newHeroName" placeholder="hero name" />
+      <input type="number" id="newHeroHealth" placeholder="health" />
+      <input type="number" id="newHeroAttack" placeholder="attack" />
+      <button id="createHeroBtn">Create Hero</button>
+      <textarea id="heroTA" placeholder="Hero info"></textarea>
+    </section>
   </body>
 </html>

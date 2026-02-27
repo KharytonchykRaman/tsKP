@@ -193,32 +193,12 @@ button.edit:hover {
   flex: 1;
 }
 
-.transaction-category {
+.transaction-property > * {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 12px;
   margin-right: 10px;
-  color: white;
-}
-
-.category-food {
-  background: #e74c3c;
-}
-.category-entertainment {
-  background: #9b59b6;
-}
-.category-transport {
-  background: #3498db;
-}
-.category-gifts {
-  background: #e67e22;
-}
-.category-education {
-  background: #1abc9c;
-}
-.category-other {
-  background: #95a5a6;
 }
 
 .transaction-amount {
@@ -273,6 +253,7 @@ button.edit:hover {
 .progress-fill {
   height: 100%;
   transition: width 0.3s;
+  background-color: #667eea;
 }
 
 .tabs {
@@ -313,9 +294,4 @@ button.edit:hover {
 #cardNameInput,
 #cardAmountInput {
   border: none;
-}
-
-#username{
-  font-size: 125%;
-  color: #1abc9c;
 }

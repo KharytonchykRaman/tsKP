@@ -1,162 +1,228 @@
-// ------------------- Система учёта финансов ---------------------------
-
 import "./style.css";
-import { User } from "./User";
 
-const loginBtn: HTMLElement | null = document.getElementById("loginBtn");
-const usernameInput: HTMLElement | null =
-  document.getElementById("usernameInput");
-const existingUsersHTML: HTMLElement | null =
-  document.getElementById("existingUsersList");
-const totalBalanceAmount: HTMLElement | null =
-  document.getElementById("totalBalanceAmount");
-const cashNameInput: HTMLElement | null =
-  document.getElementById("cashNameInput");
-const cashAmountInput: HTMLElement | null =
-  document.getElementById("cashAmountInput");
-const cardNameInput: HTMLElement | null =
-  document.getElementById("cashNameInput");
-const cardAmountInput: HTMLElement | null =
-  document.getElementById("cashAmountInput");
-const tabs: HTMLElement | null = document.getElementById("tabs");
-const tabContents: Element[] = Array.from(
-  document.querySelectorAll(".tab-content"),
-);
-document.getElementById("cashAmountInput");
-const expenseNameInput: HTMLElement | null =
-  document.getElementById("expenseNameInput");
-document.getElementById("cashAmountInput");
-const expenseAmountInput: HTMLElement | null =
-  document.getElementById("expenseAmountInput");
-document.getElementById("cashAmountInput");
-const expenseCategorySelect: HTMLElement | null = document.getElementById(
-  "expenseCategorySelect",
-);
-document.getElementById("cashAmountInput");
-const expenseAccountSelect: HTMLElement | null = document.getElementById(
-  "expenseAccountSelect",
-);
-document.getElementById("cashAmountInput");
-const addExpenseBtn: HTMLElement | null =
-  document.getElementById("addExpenseBtn");
-document.getElementById("cashAmountInput");
-const incomeNameInput: HTMLElement | null =
-  document.getElementById("incomeNameInput");
-document.getElementById("cashAmountInput");
-const incomeAmountInput: HTMLElement | null =
-  document.getElementById("incomeAmountInput");
-document.getElementById("cashAmountInput");
-const incomeAccountSelect: HTMLElement | null = document.getElementById(
-  "incomeAccountSelect",
-);
-document.getElementById("cashAmountInput");
-const addIncomeBtn: HTMLElement | null =
-  document.getElementById("addIncomeBtn");
-document.getElementById("cashAmountInput");
-const plannedExpenseNameInput: HTMLElement | null = document.getElementById(
-  "plannedExpenseNameInput",
-);
-document.getElementById("cashAmountInput");
-const plannedExpenseAmountInput: HTMLElement | null = document.getElementById(
-  "plannedExpenseAmountInput",
-);
-document.getElementById("cashAmountInput");
-const plannedExpenseCategorySelect: HTMLElement | null =
-  document.getElementById("plannedExpenseCategorySelect");
-document.getElementById("cashAmountInput");
-const plannedExpenseAccountSelect: HTMLElement | null = document.getElementById(
-  "plannedExpenseAccountSelect",
-);
-document.getElementById("cashAmountInput");
-const addPlannedExpenseBtn: HTMLElement | null = document.getElementById(
-  "addPlannedExpenseBtn",
-);
-document.getElementById("cashAmountInput");
-const plannedIncomeNameInput: HTMLElement | null = document.getElementById(
-  "plannedIncomeNameInput",
-);
-document.getElementById("cashAmountInput");
-const plannedIncomeAmountInput: HTMLElement | null = document.getElementById(
-  "plannedIncomeAmountInput",
-);
-document.getElementById("cashAmountInput");
-const plannedIncomeAccountSelect: HTMLElement | null = document.getElementById(
-  "plannedIncomeAccountSelect",
-);
-document.getElementById("cashAmountInput");
-const addPlannedIncomeBtn: HTMLElement | null = document.getElementById(
-  "addPlannedIncomeBtn",
-);
-const usernameSpan: HTMLElement | null = document.getElementById("username");
-const topCategoryText: HTMLElement | null =
-  document.getElementById("topCategoryText");
+import {
+  User,
+  Operation,
+  OperationType,
+  Timing,
+  BuyCategory,
+  PaymentMethod,
+} from "./User";
 
-//--------------------------------------------------------------------------------
-debugger
-const users: User[] =
-  localStorage.getItem("users") === null
-    ? []
-    : (JSON.parse(localStorage.getItem("users") as string) as Object[]).map(obj => new User(Object.values(obj)));
+const $ = (id: string) => document.getElementById(id) as HTMLElement;
+const $$ = (sel: string) =>
+  document.querySelectorAll(sel) as NodeListOf<HTMLElement>;
 
-const existingUsers: string[] = users.map((u) => u.username);
+let users: User[] = localStorage.getItem("users")
+  ? JSON.parse(localStorage.getItem("users") as string).map((u: any) =>
+      User.fromData(u),
+    )
+  : [];
+let currentUser: User | null = localStorage.getItem("currentUser")
+  ? (users.find(
+      (u) => u.username === localStorage.getItem("currentUser"),
+    ) as User)
+  : null;
 
-if (
-  loginBtn instanceof HTMLButtonElement &&
-  usernameInput instanceof HTMLInputElement
-) {
-  loginBtn.addEventListener("click", () => {
-    const input = usernameInput.value.trim();
-    if (input !== "" && localStorage.getItem("currentUset") !== input) {
-      if (existingUsers.includes(input)) {
-        localStorage.setItem("currentUser", input);
-        loadUser();
-      } else {
-        const newUser = new User(input);
-        users.push(newUser);
-        localStorage.setItem("users", JSON.stringify(users));
-        localStorage.setItem("currentUser", input);
-        loadUser();
-      }
-    }
+function saveUsers() {
+  localStorage.setItem("users", JSON.stringify(users.map((u) => u.toJSON())));
+}
+
+function renderTransaction(op: Operation, index: number): HTMLElement {
+  const tpl = $("transaction-template") as HTMLTemplateElement;
+  const clone = tpl.content.cloneNode(true) as DocumentFragment;
+  const el = clone.querySelector(".transaction-item")!;
+
+  if (op.category) {
+    el.querySelector(".transaction-category")!.textContent = op.category;
+  } else el.querySelector(".transaction-category")!.remove();
+
+  if (op.method) {
+    el.querySelector(".transaction-method")!.textContent = op.method;
+  } else el.querySelector(".transaction-method")!.remove();
+
+  el.querySelector(".transaction-amount")!.textContent =
+    `${op.type === "expense" ? "-" : "+"}${op.amount} ₽`;
+  el.querySelector(".transaction-amount")!.className =
+    `transaction-amount ${op.type === "expense" ? "amount-expense" : "amount-income"}`;
+
+  (el.querySelector("button.delete")! as HTMLElement).dataset.index =
+    index.toString();
+  return el as HTMLElement;
+}
+
+function renderList(container: HTMLElement, ops: Operation[], showCat = true) {
+  container.innerHTML = "";
+  if (ops.length === 0) {
+    container.innerHTML = "<p>Нет записей</p>";
+    return;
+  }
+  ops.forEach((op) => {
+    const realIndex = currentUser!.operations.indexOf(op);
+    const el = renderTransaction(op, realIndex);
+    if (!showCat) el.querySelector(".transaction-category")?.remove();
+    container.appendChild(el);
   });
 }
 
-if (tabs instanceof HTMLElement) {
-  tabs.addEventListener("click", (e) => {
-    debugger;
-    Array.from(tabs.children).forEach((element) => {
-      element.classList.remove("active");
-    });
-    const targetEl: Element | null = (e.target as Element).closest(".tab");
-    if (targetEl instanceof Element) {
-      targetEl.classList.add("active");
+function renderStats() {
+  const grid = $("statsGrid");
+  const topText = $("topCategoryText");
+  grid.innerHTML = "";
 
-      const value: string = targetEl.getAttribute("data-tab") as string;
+  const stats = currentUser!.getCategoryStats();
+  if (stats.length === 0) {
+    grid.innerHTML = "<p>Нет данных</p>";
+    topText.textContent = "Нет данных";
+    return;
+  }
 
-      tabContents.forEach((tc) => tc.classList.remove("active"));
-      document.querySelector(`#${value}`)?.classList.add("active");
-    }
+  const top = stats[0];
+  topText.textContent = `${top.category} — ${top.amount} ₽`;
+
+  stats.forEach((s) => {
+    const tpl = $("stat-template") as HTMLTemplateElement;
+    const clone = tpl.content.cloneNode(true) as DocumentFragment;
+    const el = clone.querySelector(".stat-card")!;
+
+    el.querySelector(".stat-value")!.textContent = `${s.amount} ₽`;
+    el.querySelector(".stat-label")!.textContent = s.category;
+    (el.querySelector(".progress-fill")! as HTMLElement).style.width =
+      `${s.percent}%`;
+    el.querySelector(".stat-percent")!.textContent = `${s.percent.toFixed(1)}%`;
+    grid.appendChild(el);
   });
 }
 
-function loadUser(): void {
-  debugger
-  const currUsername: string | null= localStorage.getItem("currentUser");
-  console.log(users[0]);
+function render() {
+  if (!currentUser) return;
 
-  const currUser: User = users.find((u) => u.username === currUsername) as User;
+  $("totalBalanceAmount").textContent = `${currentUser.balance} ₽`;
+  ($("cashNameInput") as HTMLInputElement).value = currentUser.cash.name;
+  ($("cashAmountInput") as HTMLInputElement).value =
+    currentUser.cash.balance.toString();
+  ($("cardNameInput") as HTMLInputElement).value = currentUser.card.name;
+  ($("cardAmountInput") as HTMLInputElement).value =
+    currentUser.card.balance.toString();
 
-  (usernameSpan as HTMLElement).textContent = `: ${currUsername}`;
-  (totalBalanceAmount as HTMLElement).textContent = `${currUser.balance} ₽`;  
-  (cardNameInput as HTMLInputElement).value = currUser.card.name;
-  (cardAmountInput as HTMLInputElement).value =
-    currUser.card.balance.toString();
-  (cashNameInput as HTMLInputElement).value = currUser.cash.name;
-  (cashAmountInput as HTMLInputElement).value =
-    currUser.cash.balance.toString();
-  (topCategoryText as HTMLElement).textContent = currUser.bestCategory?.name || "Нет данных";
+  renderList(
+    $("expensesList"),
+    currentUser.getOperations("expense", "current"),
+  );
+  renderList(
+    $("incomesList"),
+    currentUser.getOperations("income", "current"),
+    false,
+  );
+  renderList(
+    $("plannedExpensesList"),
+    currentUser.getOperations("expense", "future"),
+  );
+  renderList(
+    $("plannedIncomesList"),
+    currentUser.getOperations("income", "future"),
+    false,
+  );
+
+  renderStats();
 }
 
-if (localStorage.getItem("currentUser")) {
-  loadUser();
+function login() {
+  const name = ($("usernameInput") as HTMLInputElement).value.trim();
+  if (!name) return;
+
+  currentUser = users.find((u) => u.username === name) || new User(name);
+  if (!users.find((u) => u.username === name)) users.push(currentUser);
+
+  localStorage.setItem("currentUser", name);
+  saveUsers();
+  $("currentUsername").textContent = currentUser.username;
+  $("currentUserDisplay").style.display = "block";
+  render();
 }
+
+function updateWallet(type: "cash" | "card") {
+  if (!currentUser) return;
+  const wallet = type === "cash" ? currentUser.cash : currentUser.card;
+  const nameInput = $(`${type}NameInput`) as HTMLInputElement;
+  const amountInput = $(`${type}AmountInput`) as HTMLInputElement;
+
+  if (nameInput.value) wallet.name = nameInput.value;
+  wallet.balance = Number(amountInput.value);
+
+  saveUsers();
+  render();
+}
+
+function addOp(type: OperationType, timing: Timing, typeNtiming: string) {
+  if (!currentUser) return;
+
+  const amount = Number(
+    ($(`${typeNtiming}AmountInput`) as HTMLInputElement).value,
+  );
+  const selectedCat = $(`${typeNtiming}CategorySelect`) as HTMLSelectElement;
+  const category = selectedCat?.value as BuyCategory | undefined;
+  const selectedMethod = $(`${typeNtiming}AccountSelect`) as HTMLSelectElement;
+  const method = selectedMethod?.value as PaymentMethod | undefined;
+
+  if (!amount) {
+    alert("Введите сумму");
+    return;
+  }
+
+  try {
+    currentUser.addOperation({ amount, type, timing, category, method });
+    ($(`${typeNtiming}AmountInput`) as HTMLInputElement).value = "";
+    saveUsers();
+    render();
+  } catch (e: any) {
+    alert(e.message);
+  }
+}
+
+if (currentUser) {
+  $("currentUsername").textContent = currentUser.username;
+  $("currentUserDisplay").style.display = "block";
+  render();
+}
+
+$("loginBtn").addEventListener("click", login);
+
+$("cashNameInput").addEventListener("change", () => updateWallet("cash"));
+$("cashAmountInput").addEventListener("change", () => updateWallet("cash"));
+$("cardNameInput").addEventListener("change", () => updateWallet("card"));
+$("cardAmountInput").addEventListener("change", () => updateWallet("card"));
+
+$("tabs").addEventListener("click", (e) => {
+  const tab = (e.target as HTMLElement).closest(".tab") as HTMLElement;
+  if (!tab) return;
+  $$(".tab").forEach((t) => t.classList.remove("active"));
+  tab.classList.add("active");
+  const targetId = tab.dataset.tab;
+  $$(".tab-content").forEach((c) => c.classList.remove("active"));
+  if (targetId) $(targetId).classList.add("active");
+});
+
+$("addExpenseBtn").addEventListener("click", () =>
+  addOp("expense", "current", "expense"),
+);
+$("addIncomeBtn").addEventListener("click", () =>
+  addOp("income", "current", "income"),
+);
+$("addPlannedExpenseBtn").addEventListener("click", () =>
+  addOp("expense", "future", "plannedExpense"),
+);
+$("addPlannedIncomeBtn").addEventListener("click", () =>
+  addOp("income", "future", "plannedIncome"),
+);
+
+document.addEventListener("click", (e) => {
+  const btn = (e.target as HTMLElement).closest("button.delete");
+  if (!btn || !currentUser) return;
+  const idx = Number((btn as HTMLElement).dataset.index || "-1");
+  if (idx >= 0) {
+    currentUser.deleteOperation(idx);
+    saveUsers();
+    render();
+  }
+});
